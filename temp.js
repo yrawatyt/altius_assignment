@@ -1,101 +1,89 @@
-const express = require('express');
-const mongoose = require('mongoose');
-const dotenv = require('dotenv');
+const express=require('express');
+const app=express();
+const port=5001;
 
-dotenv.config();
+blog=[{
+    id:'1',
+    title: 'John',
+    body: 'Doe',
+    author: 'johndoe@example.com',
+  },]
 
-const app = express();
-const port = 5001;
-
-// Middleware to parse JSON
 app.use(express.json());
 
-// Connect to MongoDB
-mongoose.connect("mongodb+srv://Yogesh:<12345>@cluster0.bmkp6gc.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0", { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(() => console.log('Connected to MongoDB'))
-  .catch(err => console.error('Could not connect to MongoDB', err));
 
-// Define a Mongoose Schema and Model
-const blogSchema = new mongoose.Schema({
-  title: { type: String, required: true },
-  body: { type: String, required: true },
-  author: { type: String, required: true },
-}, { timestamps: true });
+app.get('/home', function (req,res){
+    res.send('hello');
 
-const Blog = mongoose.model('Blog', blogSchema);
-
-app.get('/home', (req, res) => {
-  res.send('hello');
 });
 
-app.post('/blog', async (req, res) => {
-  const { title, body, author } = req.body;
-
-  if (!title || !body || !author) {
-    return res.status(400).send('Missing title or author or body');
-  }
-
-  try {
-    const blog = new Blog({ title, body, author });
-    await blog.save();
-    res.status(201).send(blog);
-  } catch (err) {
-    res.status(500).send('Error saving blog');
-  }
+app.listen(port, ()=>
+{
+    console.log(`listening on port no. ${port}`);
 });
 
-app.get('/blog', async (req, res) => {
-  try {
-    const blogs = await Blog.find().limit(5).sort({ createdAt: -1 });
-    const totalBlogs = await Blog.countDocuments();
-    res.json({
-      posts: blogs,
-      page: 1,
-      pageCount: Math.ceil(totalBlogs / 5),
-    });
-  } catch (err) {
-    res.status(500).send('Error fetching blogs');
-  }
+app.post('/blog',(req,res)=>{
+    const {title, body, author}=req.body;
+    
+    if (!title || !body || !author) {
+        return res.status(400).send('Missing title or author or body');
+      }
+    //console.log(data);
+    const newId = (blog.length + 1).toString(); // Generate a new id
+    const data={id:newId,title, body, author};
+    blog.push(data);
+    res.status(201).send(data);
 });
 
-app.get('/blog/:id', async (req, res) => {
-  try {
-    const blog = await Blog.findById(req.params.id);
-    if (!blog) {
-      return res.status(404).send('Blog not found');
+// app.get('/blog', (req,res)=>
+// {
+//     console.log(blog);
+//     res.json(blog);
+
+// });
+
+app.get('/blog/:id', (req, res) => {
+    const data= blog.find(b => b.id === req.params.id);
+    if (!data) {
+      return res.status(404).send('Book not found');
     }
-    res.json(blog);
-  } catch (err) {
-    res.status(500).send('Error fetching blog');
-  }
+    res.json(data);
+  });
+
+//pagination
+const pageLimit = 5;
+app.get('/blog/', function(req, res) {
+  res.json({
+    "posts": blog.slice(-pageLimit).reverse(),
+    "page": 1,
+    "pageCount": Math.ceil(blog.length / 5)
+  });
 });
 
-app.put('/blog/:id', async (req, res) => {
-  const { title, body, author } = req.body;
-
-  try {
-    const blog = await Blog.findByIdAndUpdate(req.params.id, { title, body, author }, { new: true, runValidators: true });
-    if (!blog) {
-      return res.status(404).send('Blog not found');
+app.put('/blog/:id', (req, res) => {
+    const data = blog.find(b => b.id === req.params.id);
+    if (!data) {
+      return res.status(404).send('Book not found');
     }
-    res.send(blog);
-  } catch (err) {
-    res.status(500).send('Error updating blog');
-  }
-});
+  
+    const { title,body, author} = req.body;
+    data.title = title || blog.title;
+    data.author = author || blog.author;
+    data.body=body||blog.body;
+  
+    res.send(data);
+  });
 
-app.delete('/blog/:id', async (req, res) => {
-  try {
-    const blog = await Blog.findByIdAndDelete(req.params.id);
-    if (!blog) {
-      return res.status(404).send('Blog not found');
+  app.delete('/blog/:id', (req, res) => {
+    const blogIndex = blog.findIndex(b => b.id === req.params.id);
+    if (blogIndex === -1) {
+      return res.status(404).send('Book not found');
     }
+  
+    blog.splice(blogIndex, 1);
     res.status(204).send();
-  } catch (err) {
-    res.status(500).send('Error deleting blog');
-  }
-});
+  });
 
-app.listen(port, () => {
-  console.log(`Listening on port ${port}`);
-});
+
+  
+
