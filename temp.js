@@ -12,10 +12,7 @@ blog=[{
 app.use(express.json());
 
 
-app.get('/home', function (req,res){
-    res.send('hello');
 
-});
 
 app.listen(port, ()=>
 {
