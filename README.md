@@ -2,7 +2,7 @@
 
 A simple blog API built with Express and MongoDB, using Mongoose for data modeling.
 
-NOTE : in server.js i have implemented using mongodb as database. while in temp.js i have not used any database (used local storage). both are tested and working.
+NOTE : In Server.js i have implemented using mongodb as database. while in Temp.js i have not used any database (used local storage). both are tested and working.
 
 ## Features
 
