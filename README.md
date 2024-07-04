@@ -43,12 +43,11 @@ NOTE : In server.js i have implemented using mongodb as database. While in temp.
 
 Base URL: `http://localhost:5001`
 
-1. GET `/home`: Returns a greeting message
-2. POST `/blog`: Create a new blog post
-3. GET `/blog`: Retrieve recent blog posts
-4. GET `/blog/:id`: Retrieve a specific blog post
-5. PUT `/blog/:id`: Update a blog post
-6. DELETE `/blog/:id`: Delete a blog post
+1. POST `/blog`: Create a new blog post
+2. GET `/blog`: Retrieve recent blog posts
+3. GET `/blog/:id`: Retrieve a specific blog post
+4. PUT `/blog/:id`: Update a blog post
+5. DELETE `/blog/:id`: Delete a blog post
 
 ## Code Structure
 
