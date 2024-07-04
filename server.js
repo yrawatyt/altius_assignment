@@ -24,9 +24,7 @@ const blogSchema = new mongoose.Schema({
 
 const Blog = mongoose.model('Blog', blogSchema);
 
-app.get('/home', (req, res) => {
-  res.send('hello');
-});
+
 
 app.post('/blog', async (req, res) => {
   const { title, body, author } = req.body;
